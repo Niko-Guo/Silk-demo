@@ -1,26 +1,31 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import SharedLayout from './pages/SharedLayout';
+import AllRepos from './pages/AllRepos';
+import RepoDetail from './pages/RepoDetail';
+import Login from './pages/Login';
+import NotFound from './pages/NotFound';
+
+// const Home = React.lazy(() => import('./pages/Home'));
+// const Login = React.lazy(() => import('./pages/Login'));
+// const AllRepos = React.lazy(() => import('./pages/AllRepos'));
+// const RepoDetail = React.lazy(() => import('./pages/RepoDetail'));
+// const NotFound = React.lazy(() => import('./pages/NotFound'));
+// const SharedLayout = React.lazy(() => import('./pages/SharedLayout'));
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	return (
+		<Routes>
+			<Route path="/" element={<SharedLayout />}>
+				<Route index element={<Home />} />
+				<Route path="/repos" element={<AllRepos />} />
+				<Route path="/repos/:repoId" element={<RepoDetail />} />
+				<Route path="/login" element={<Login />} />
+				<Route path="*" element={<NotFound />} />
+			</Route>
+		</Routes>
+	);
 }
 
 export default App;
