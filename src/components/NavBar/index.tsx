@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { NavLink, Link } from 'react-router-dom';
 import { Button, Popconfirm } from 'antd';
-
 import { LoginOutlined } from '@ant-design/icons';
 
 const NavBarWrapper = styled.div`
@@ -10,7 +9,7 @@ const NavBarWrapper = styled.div`
 	left: 0;
 	top: 0;
 	height: 80px;
-	background-color: #ffffff;
+	background-color: #f0f2f5;
 	box-shadow: 0 0 8px #ddd;
 	display: flex;
 	justify-content: space-between;
@@ -34,7 +33,7 @@ const NavBarWrapper = styled.div`
 `;
 
 const LogOutButton = styled(Button)`
-	background-color: #ffffff;
+	background-color: #f0f2f5;
 	border-style: none;
 	cursor: pointer;
 `;

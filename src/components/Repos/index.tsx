@@ -15,37 +15,37 @@ const CardWrapper = styled(ProCard)`
 
 const RepoList: React.FC = () => {
 	return (
-		// <CardWrapper split="vertical">
-		// 	<ProCard title="Personal info" colSpan="25%">
-		// 		<PersonalInfo />
-		// 	</ProCard>
-		// 	<ProCard split="horizontal">
-		// 		<ProCard headerBordered>
-		// 			<SearchBar />
-		// 		</ProCard>
-		// 		<ProCard headerBordered>
-		// 			<div style={{ height: 360 }}>
-		// 				<RepoItem />
-		// 			</div>
-		// 		</ProCard>
-		// 	</ProCard>
-		// </CardWrapper>
+		<CardWrapper split="vertical" style={{ margin: 5 }}>
+			<ProCard title="Personal info" colSpan="20%">
+				<PersonalInfo />
+			</ProCard>
+			<ProCard split="horizontal">
+				<ProCard headerBordered>
+					<SearchBar />
+				</ProCard>
+				<ProCard headerBordered>
+					<div style={{ height: 360 }}>
+						<RepoItem />
+					</div>
+				</ProCard>
+			</ProCard>
+		</CardWrapper>
 		// <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: 300 }}  description={
 		// <div>
 		//   No data now, try to <a onClick={() => window.location.reload()}>reload</a> the page.
 		// </div>}
 		// </Empty>
-		<Empty
-			image={Empty.PRESENTED_IMAGE_SIMPLE}
-			style={{ margin: 300, fontSize: 20 }}
-			description={
-				<div>
-					No data now, try to{' '}
-					<button onClick={() => window.location.reload()}>reload</button> the
-					page.
-				</div>
-			}
-		/>
+		// <Empty
+		// 	image={Empty.PRESENTED_IMAGE_SIMPLE}
+		// 	style={{ margin: 300, fontSize: 20 }}
+		// 	description={
+		// 		<div>
+		// 			No data now, try to{' '}
+		// 			<button onClick={() => window.location.reload()}>reload</button> the
+		// 			page.
+		// 		</div>
+		// 	}
+		// />
 	);
 };
 
