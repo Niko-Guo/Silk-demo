@@ -1,32 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Select } from 'antd';
+import { ProFormSelect } from '@ant-design/pro-form';
+import axios from 'axios';
 
-const SearchBar: React.FC = () => {
+interface SearchBarProps {
+	options: any;
+	selectUser: (value: string) => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = (props) => {
+	const { options, selectUser } = props;
 	return (
 		<Select
 			showSearch
-			size="middle"
+			size="large"
 			placeholder="Select a user"
 			optionFilterProp="children"
-			// onChange={onChange}
-			// onSearch={onSearch}
-			filterOption={(input, option) =>
-				(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-			}
-			options={[
-				{
-					value: 'jack',
-					label: 'Jack',
-				},
-				{
-					value: 'lucy',
-					label: 'Lucy',
-				},
-				{
-					value: 'tom',
-					label: 'Tom',
-				},
-			]}
+			onChange={(value) => {
+				selectUser(value);
+			}}
+			defaultValue={'mojombo'}
+			options={options}
 		/>
 	);
 };

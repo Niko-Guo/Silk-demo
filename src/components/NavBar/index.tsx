@@ -9,7 +9,7 @@ const NavBarWrapper = styled.div`
 	left: 0;
 	top: 0;
 	height: 80px;
-	background-color: #f0f2f5;
+	background-color: white;
 	box-shadow: 0 0 8px #ddd;
 	display: flex;
 	justify-content: space-between;

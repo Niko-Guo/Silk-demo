@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Empty } from 'antd';
 import styled from 'styled-components';
+import axios from 'axios';
 
 import { ProCard } from '@ant-design/pro-components';
 import PersonalInfo from './PersonalInfo';
@@ -14,19 +15,52 @@ const CardWrapper = styled(ProCard)`
 `;
 
 const RepoList: React.FC = () => {
+	const [userOptions, setUserOptions] = useState<any>();
+	const [userSelectedOption, setUserSelectedOption] = useState<any>();
+
+	const fetchAllUsers = async () => {
+		const res = await axios.request({
+			url: `https://api.github.com/users`,
+			method: 'GET',
+			headers: {
+				accept: 'application/vnd.github+json',
+			},
+			params: {
+				per_page: 100,
+			},
+		});
+
+		if (res.status === 200) {
+			setUserOptions(
+				res.data.map((user) => ({
+					label: user.login,
+					value: user.login,
+				}))
+			);
+		}
+	};
+
+	const userSelectOptionHandler = (value) => {
+		setUserSelectedOption(value);
+		console.log('SEARCH', userSelectedOption);
+	};
+	useEffect(() => {
+		fetchAllUsers();
+	}, []);
 	return (
 		<CardWrapper split="vertical" style={{ margin: 5 }}>
 			<ProCard title="Personal info" colSpan="20%">
-				<PersonalInfo />
+				<PersonalInfo userName={userSelectedOption} />
 			</ProCard>
 			<ProCard split="horizontal">
 				<ProCard headerBordered>
-					<SearchBar />
+					<SearchBar
+						options={userOptions}
+						selectUser={userSelectOptionHandler}
+					/>
 				</ProCard>
 				<ProCard headerBordered>
-					<div style={{ height: 360 }}>
-						<RepoItem />
-					</div>
+					<RepoItem userName={userSelectedOption} />
 				</ProCard>
 			</ProCard>
 		</CardWrapper>

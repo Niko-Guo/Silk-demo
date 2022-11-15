@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import SharedLayout from './pages/SharedLayout';
 import AllRepos from './pages/AllRepos';
-import RepoDetail from './pages/RepoDetail';
+import RepoDetail from './pages/SingleRepo';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 
@@ -20,7 +20,7 @@ function App() {
 			<Route path="/" element={<SharedLayout />}>
 				<Route index element={<Home />} />
 				<Route path="/repos" element={<AllRepos />} />
-				<Route path="/repos/:repoId" element={<RepoDetail />} />
+				<Route path="/repos/:repoOwner/:repoName/:repoId" element={<RepoDetail />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="*" element={<NotFound />} />
 			</Route>
