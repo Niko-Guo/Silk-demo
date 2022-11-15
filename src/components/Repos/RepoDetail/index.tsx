@@ -6,7 +6,6 @@ import {
 	Divider,
 	Dropdown,
 	Space,
-	Menu,
 	Card,
 	Comment,
 	Tooltip,
@@ -15,6 +14,7 @@ import {
 } from 'antd';
 import { ProCard } from '@ant-design/pro-components';
 import styled from 'styled-components';
+import { useFetch } from '@hooks/useFetch';
 import RcResizeObserver from 'rc-resize-observer';
 import { DownOutlined } from '@ant-design/icons';
 
@@ -31,10 +31,30 @@ const CodeInfo = styled.div`
 	align-items: center;
 `;
 
-const RepoDetail = () => {
-	const [repoDetailInfo, setRepoDetailInfo] = useState<any>();
+interface repoDetailInfo {
+	openIssues: number;
+	watchers: number;
+	forks: number;
+	subscribers: number;
+	language: string;
+	description: string;
+	created_at: string;
+	updated_at: string;
+	pushed_at: string;
+}
+
+const RepoDetail: React.FC = () => {
+	const [repoDetailInfo, setRepoDetailInfo] = useState<any | never>({});
+	const [branchInfo, setBranchInfo] = useState([]);
+	const [totalBranches, setTotalBranches] = useState(0);
+	const [totalTags, setTotalTags] = useState(0);
 	const [responsive, setResponsive] = useState(false);
 	const { repoId, repoOwner, repoName } = useParams();
+
+	const { data: repoDetail} = useFetch(repoOwner, repoName, '' );
+	const { data: branchDetail } = useFetch(repoOwner, repoName, '/branches' );
+	const { data: tagsDetail} = useFetch(repoOwner, repoName, '/tags' );
+
 
 	const getRepoDetailInfo = async (repoOwner, repoName) => {
 		const res = await axios.request({
@@ -44,86 +64,57 @@ const RepoDetail = () => {
 				accept: 'application/vnd.github+json',
 			},
 		});
-		console.log('RESR', {
-			openIssues: res.data.open_issues_count,
-			watchers: res.data.watchers_count,
-			forks: res.data.forks_count,
-			subscribers: res.data.subscribers_count,
-			language: res.data.language,
-			description: res.data.description,
-			created_at: res.data.created_at,
-			updated_at: res.data.updated_at,
-			pushed_at: res.data.pushed_at,
-		});
 
 		if (res.status === 200) {
-			setRepoDetailInfo({
-				openIssues: res.data.open_issues_count,
-				watchers: res.data.watchers_count,
-				forks: res.data.forks_count,
-				subscribers: res.data.subscribers_count,
-				language: res.data.language,
-				description: res.data.description,
-				created_at: res.data.created_at,
-				updated_at: res.data.updated_at,
-				pushed_at: res.data.pushed_at,
-			});
-			console.log(repoDetailInfo);
+			setRepoDetailInfo(res.data);
 		}
 	};
 
-	const branchMenu = (
-		<Menu
-			items={[
-				{
-					key: '1',
-					label: (
-						<a
-							target="_blank"
-							rel="noopener noreferrer"
-							href="https://www.antgroup.com"
-						>
-							1st menu item
-						</a>
-					),
-				},
-				{
-					key: '2',
-					label: (
-						<a
-							target="_blank"
-							rel="noopener noreferrer"
-							href="https://www.aliyun.com"
-						>
-							2nd menu item (disabled)
-						</a>
-					),
-					disabled: true,
-				},
-				{
-					key: '3',
-					label: (
-						<a
-							target="_blank"
-							rel="noopener noreferrer"
-							href="https://www.luohanacademy.com"
-						>
-							3rd menu item (disabled)
-						</a>
-					),
-					disabled: true,
-				},
-				{
-					key: '4',
-					danger: true,
-					label: 'a danger item',
-				},
-			]}
-		/>
-	);
+	const getBranches = async (repoOwner, repoName) => {
+		const res = await axios.request({
+			url: `https://api.github.com/repos/${repoOwner}/${repoName}/branches`,
+			method: 'GET',
+			headers: {
+				accept: 'application/vnd.github+json',
+			},
+		});
+		console.log('bbbb', res);
+
+		if (res.status === 200) {
+			setTotalBranches(res.data.length);
+			setBranchInfo(
+				res.data.map((item, index) => ({
+					label: item.name,
+					key: index,
+				}))
+			);
+		}
+	};
+
+	const getTags = async (repoOwner, repoName) => {
+		const res = await axios.request({
+			url: `https://api.github.com/repos/${repoOwner}/${repoName}/branches`,
+			method: 'GET',
+			headers: {
+				accept: 'application/vnd.github+json',
+			},
+		});
+		console.log('bbbb', res);
+
+		if (res.status === 200) {
+			setTotalTags(res.data.length);
+		}
+	};
+
+	const items = [
+		{ label: 'item 1', key: 'item-1' }, // remember to pass the key prop
+		{ label: 'item 2', key: 'item-2' },
+	];
 
 	useEffect(() => {
 		getRepoDetailInfo('evanphx', 'atc');
+		getBranches('evanphx', 'atc');
+		getTags('evanphx', 'atc');
 	}, []);
 
 	return (
@@ -141,35 +132,40 @@ const RepoDetail = () => {
 					<ProCard>
 						<Statistic
 							title="Open Issues"
-							value={'open_issues'}
-							precision={1}
+							value={repoDetailInfo?.open_issues_count}
 						/>
 					</ProCard>
 					<Divider type={responsive ? 'horizontal' : 'vertical'} />
 					<ProCard>
-						<Statistic title="Watchers" value={'watchers'} precision={1} />
+						<Statistic
+							title="Watchers"
+							value={repoDetailInfo?.watchers_count}
+						/>
 					</ProCard>
 					<Divider type={responsive ? 'horizontal' : 'vertical'} />
 					<ProCard>
-						<Statistic title="Forks" value={'forks'} />
+						<Statistic title="Forks" value={repoDetailInfo?.forks_count} />
 					</ProCard>
 					<Divider type={responsive ? 'horizontal' : 'vertical'} />
 					<ProCard>
-						<Statistic title="Subscribers" value={'subscribers_count'} />
+						<Statistic
+							title="Subscribers"
+							value={repoDetailInfo?.subscribers_count}
+						/>
 					</ProCard>
 				</ProCard.Group>
 			</RcResizeObserver>
 
 			<CodeInfo>
-				<Dropdown overlay={branchMenu}>
+				<Dropdown menu={{ items }}>
 					<Space>
 						Branch
 						<DownOutlined />
 					</Space>
 				</Dropdown>
-				<div>5 Branches</div>
-				<div>5 tages</div>
-				<div>Language</div>
+				<div>{totalBranches} Branches</div>
+				<div>{totalTags} tages</div>
+				<div>{repoDetailInfo?.language}</div>
 			</CodeInfo>
 
 			<ProCard
@@ -178,16 +174,14 @@ const RepoDetail = () => {
 				headerBordered
 			>
 				<ProCard title="×ó²àÏêÇé" colSpan="50%">
-					{/* <div style={{ height: 360 }}>×ó²àÄÚÈİ</div> */}
 					<div>
 						<h2>About</h2>
 						<p>Description</p>
 					</div>
 				</ProCard>
 				<ProCard title="About" size="default">
-					{/* <div style={{ height: 360 }}>ÓÒ²àÄÚÈİ</div> */}
 					<div>
-						<p>Description</p>
+						<p>{repoDetailInfo?.description}</p>
 					</div>
 					<Card>
 						<Comment
@@ -216,9 +210,15 @@ const RepoDetail = () => {
 					</Card>
 					<Card>
 						<Timeline>
-							<Timeline.Item>Pushed at pushed_at</Timeline.Item>
-							<Timeline.Item>Updated at updated_at</Timeline.Item>
-							<Timeline.Item>Created at created_at</Timeline.Item>
+							<Timeline.Item>
+								Pushed at {repoDetailInfo?.pushed_at}
+							</Timeline.Item>
+							<Timeline.Item>
+								Updated at {repoDetailInfo?.updated_at}
+							</Timeline.Item>
+							<Timeline.Item>
+								Created at {repoDetailInfo?.created_at}
+							</Timeline.Item>
 						</Timeline>
 					</Card>
 				</ProCard>
