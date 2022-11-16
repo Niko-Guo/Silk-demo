@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Select } from 'antd';
-import { ProFormSelect } from '@ant-design/pro-form';
-import axios from 'axios';
+
+import { UserOptionType } from '../interface';
 
 interface SearchBarProps {
-	options: any;
+	options: UserOptionType[] | undefined;
 	selectUser: (value: string) => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = (props) => {
 	const { options, selectUser } = props;
+
 	return (
 		<Select
 			showSearch
@@ -19,7 +20,10 @@ const SearchBar: React.FC<SearchBarProps> = (props) => {
 			onChange={(value) => {
 				selectUser(value);
 			}}
-			defaultValue={'mojombo'}
+			filterOption={(
+				input: string,
+				option: { label: string; name: string } | undefined
+			) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
 			options={options}
 		/>
 	);

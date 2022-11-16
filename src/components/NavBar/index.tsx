@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import { NavLink, Link } from 'react-router-dom';
 import { Button, Popconfirm } from 'antd';
 import { LoginOutlined } from '@ant-design/icons';
@@ -33,12 +34,17 @@ const NavBarWrapper = styled.div`
 `;
 
 const LogOutButton = styled(Button)`
-	background-color: #f0f2f5;
 	border-style: none;
 	cursor: pointer;
 `;
 
 const NavBar: React.FC = () => {
+	const navigate = useNavigate();
+
+	const onConfirm = () => {
+		navigate('/login');
+	};
+
 	return (
 		<NavBarWrapper>
 			<Link to="/">
@@ -65,7 +71,7 @@ const NavBar: React.FC = () => {
 			<Popconfirm
 				placement="bottomRight"
 				title="Are you sure to logout?"
-				// onConfirm={confirm}
+				onConfirm={onConfirm}
 				okText="Yes"
 				cancelText="No"
 			>

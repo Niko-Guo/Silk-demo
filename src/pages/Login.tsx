@@ -1,9 +1,8 @@
-import React from 'react'
+import React from 'react';
+import AuthForm from '../components/Auth/index';
 
 const Login: React.FC = () => {
-  return (
-    <div>Login</div>
-  )
-}
+	return <AuthForm />;
+};
 
-export default Login
+export default Login;

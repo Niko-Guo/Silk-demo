@@ -17,9 +17,5 @@ export const useFetch = async (
 		return {
 			data: res.data,
 		};
-	} else {
-		return {
-			data: res?.message,
-		};
 	}
 };

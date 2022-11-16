@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Spin, Pagination } from 'antd';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Card, Spin, Pagination, Empty } from 'antd';
+import { RepoInfo } from '../interface';
 import styled from 'styled-components';
-import axios from 'axios';
+
 import { useNavigate } from 'react-router-dom';
+import apiService from '../../../service/apiService';
+
+import { EMPTY_STRING_PLACEHOLDER } from '../../../constants/index';
 
 const Wrapper = styled.div`
 	.ant-pagination {
@@ -29,114 +33,86 @@ const Container = styled.div`
 	}
 `;
 
-// {
-// 	"message": "Request failed with status code 404",
-// 	"name": "AxiosError",
-// 	"stack": "AxiosError: Request failed with status code 404\n    at settle (http://localhost:3000/static/js/bundle.js:150519:12)\n    at XMLHttpRequest.onloadend (http://localhost:3000/static/js/bundle.js:149259:66)",
-// 	"config": {
-// 			"transitional": {
-// 					"silentJSONParsing": true,
-// 					"forcedJSONParsing": true,
-// 					"clarifyTimeoutError": false
-// 			},
-// 			"transformRequest": [
-// 					null
-// 			],
-// 			"transformResponse": [
-// 					null
-// 			],
-// 			"timeout": 0,
-// 			"xsrfCookieName": "XSRF-TOKEN",
-// 			"xsrfHeaderName": "X-XSRF-TOKEN",
-// 			"maxContentLength": -1,
-// 			"maxBodyLength": -1,
-// 			"env": {},
-// 			"headers": {
-// 					"Accept": "application/json, text/plain, */*",
-// 					"accept": "application/vnd.github+json"
-// 			},
-// 			"url": "https://api.github.com//users/mojombo/repos",
-// 			"method": "get"
-// 	},
-// 	"code": "ERR_BAD_REQUEST",
-// 	"status": 404
-// }
-
 interface RepoItemProps {
 	userName: string;
 }
+
 const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
-	const [repoInfo, setRepoInfo] = useState<any>([]);
+	const [repoInfo, setRepoInfo] = useState<RepoInfo[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const [total, setTotal] = useState(1);
+	const [total, setTotal] = useState(100);
 
 	const navigate = useNavigate();
 
-	const getReposByUsername = async (
-		userName: string
-		// page: number = 1,
-		// per_page: number = 18
-	) => {
-		setIsLoading(true);
+	const PAGE_SIZE = 18;
 
-		const res = await axios.request({
-			url: `https://api.github.com/users/${userName}/repos`,
-			method: 'GET',
-			params: {
-				// page,
-				// per_page,
-			},
-			headers: {
-				accept: 'application/vnd.github+json',
-			},
-		});
+	const fetchReposByUsername = useCallback(
+		async (userName: string, page: number = 1, per_page: number = 18) => {
+			setIsLoading(true);
 
-		if (res.status === 200) {
-			setRepoInfo(
-				res.data.map((item) => ({
-					RepoId: item.id,
-					RepoOwner: item.owner.login,
-					RepoName: item.name,
-					RepoDescription: item.description,
-				}))
+			const res = await apiService.getReposByUsername(
+				userName,
+				(page = 1),
+				(per_page = 18)
 			);
-			setTotal(res.data.length);
-			setIsLoading(false);
-			console.log('dddd', repoInfo);
-		}
-	};
+
+			if (res.status === 200) {
+				setRepoInfo(
+					res.data.items.map((item) => ({
+						RepoId: item.id,
+						RepoOwner: item.owner.login,
+						RepoName: item.name,
+						RepoDescription: item.description,
+					}))
+				);
+				setTotal(res.data.total_count);
+
+				setIsLoading(false);
+			}
+		},
+		[]
+	);
 
 	useEffect(() => {
-		getReposByUsername(userName);
-	}, [userName]);
+		fetchReposByUsername(userName);
+	}, [userName, fetchReposByUsername]);
 
 	return (
 		<Spin spinning={isLoading} size="large">
 			<Wrapper>
 				<Container>
-					{repoInfo.map((item: any) => (
-						<Card
-							hoverable
-							style={{ width: 300, height: 150, margin: 'auto' }}
-							onClick={() => {
-								navigate(`/repos/${item.RepoOwner}/${item.RepoName}/${item.RepoId}`);
-							}}
-						>
-							<Card.Meta
-								title={item?.RepoName ?? '--'}
-								description={
-									<p className="text">{item?.RepoDescription ?? '--'}</p>
-								}
-							/>
-						</Card>
-					))}
+					{repoInfo.length ? (
+						repoInfo.map((item: any) => (
+							<Card
+								hoverable
+								style={{ width: 300, height: 150, margin: 'auto' }}
+								onClick={() => {
+									navigate(
+										`/repos/${item.RepoOwner}/${item.RepoName}/${item.RepoId}`
+									);
+								}}
+							>
+								<Card.Meta
+									title={item?.RepoName ?? EMPTY_STRING_PLACEHOLDER}
+									description={
+										<p className="text">
+											{item?.RepoDescription ?? EMPTY_STRING_PLACEHOLDER}
+										</p>
+									}
+								/>
+							</Card>
+						))
+					) : (
+						<Empty description="No Repositories" />
+					)}
 				</Container>
+
 				<Pagination
 					className="pagination"
 					defaultCurrent={1}
-					total={total}
-					// onChange={(page) => getReposByUsername('Ky-Ling', page)}
+					total={total / PAGE_SIZE}
+					onChange={(page) => fetchReposByUsername(userName, page)}
 					showSizeChanger={false}
 				/>
 			</Wrapper>
