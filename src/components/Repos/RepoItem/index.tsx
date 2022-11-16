@@ -45,17 +45,11 @@ const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 
 	const navigate = useNavigate();
 
-	const PAGE_SIZE = 18;
-
 	const fetchReposByUsername = useCallback(
 		async (userName: string, page: number = 1, per_page: number = 18) => {
 			setIsLoading(true);
 
-			const res = await apiService.getReposByUsername(
-				userName,
-				(page = 1),
-				(per_page = 18)
-			);
+			const res = await apiService.getReposByUsername(userName, page, per_page);
 
 			if (res.status === 200) {
 				setRepoInfo(
@@ -85,6 +79,7 @@ const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 					{repoInfo.length ? (
 						repoInfo.map((item: any) => (
 							<Card
+								key={item.RepoId}
 								hoverable
 								style={{ width: 300, height: 150, margin: 'auto' }}
 								onClick={() => {
@@ -104,14 +99,14 @@ const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 							</Card>
 						))
 					) : (
-						<Empty description="No Repositories" />
+						<Empty className="empty" description="No Repositories" />
 					)}
 				</Container>
 
 				<Pagination
 					className="pagination"
 					defaultCurrent={1}
-					total={total / PAGE_SIZE}
+					total={total}
 					onChange={(page) => fetchReposByUsername(userName, page)}
 					showSizeChanger={false}
 				/>

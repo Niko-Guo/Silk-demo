@@ -17,12 +17,13 @@ import { ProCard } from '@ant-design/pro-components';
 import styled from 'styled-components';
 
 import RcResizeObserver from 'rc-resize-observer';
-import { dateFormat } from '../../../utilities/index';
+import { dateFormat, getRandomItemsFromArray } from '../../../utilities/index';
 
 const Wrapper = styled.div`
 	display: flex;
 
-	justify-content: space-between;
+	justify-content: flex-start;
+	gap: 10px;
 `;
 
 const RepoDetail: React.FC = () => {
@@ -81,9 +82,7 @@ const RepoDetail: React.FC = () => {
 
 		if (res.status === 200) {
 			setCodeInfo(
-				[...res.data.map((item) => item.name)]
-					.sort(() => 0.5 - Math.random())
-					.slice(0, 10)
+				getRandomItemsFromArray([...res.data.map((item) => item.name)], 10)
 			);
 		}
 	};
@@ -93,8 +92,6 @@ const RepoDetail: React.FC = () => {
 		getContributors(repoOwner, repoName);
 
 		getCodeInfo(repoOwner, repoName);
-
-		
 	}, [repoOwner, repoName]);
 
 	return (
@@ -160,6 +157,9 @@ const RepoDetail: React.FC = () => {
 										Pushed at{' '}
 										{moment(repoDetailInfo?.pushed_at).format('MMMM Do YYYY')}
 									</div>
+									<div style={{ marginLeft: 380, fontWeight: 'bold' }}>
+										{repoDetailInfo?.language}
+									</div>
 								</div>
 							}
 							bordered
@@ -199,7 +199,7 @@ const RepoDetail: React.FC = () => {
 						<Button
 							type="primary"
 							size="large"
-							style={{ marginTop: 100 }}
+							style={{ marginTop: 50 }}
 							href={`https://github.com/${repoOwner}`}
 						>
 							More Info

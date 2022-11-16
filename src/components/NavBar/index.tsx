@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { NavLink, Link } from 'react-router-dom';
-import { Button, Popconfirm } from 'antd';
+import { Button, message, Popconfirm } from 'antd';
 import { LoginOutlined } from '@ant-design/icons';
+import AuthContext from '../../store/auth-context';
 
 const NavBarWrapper = styled.div`
 	position: sticky;
@@ -40,9 +41,12 @@ const LogOutButton = styled(Button)`
 
 const NavBar: React.FC = () => {
 	const navigate = useNavigate();
+	const authCtx = useContext(AuthContext);
 
 	const onConfirm = () => {
+		authCtx.logout();
 		navigate('/login');
+		message.success('Log out successfully!');
 	};
 
 	return (

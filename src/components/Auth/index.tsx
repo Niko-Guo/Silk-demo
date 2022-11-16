@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import RegisterFormModal from './RegisterFormModal';
 
 const Wrapper = styled.div`
-
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -24,7 +23,6 @@ const AuthForm: React.FC = () => {
 
 	const onFinish = (values: any) => {
 		console.log('Received values of form: ', values);
-		setIsLoading(true);
 
 		const logInUrl =
 			'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCwKSCzYReCHtsBB42lVr9hSFKb6RZlbpY';
@@ -61,7 +59,7 @@ const AuthForm: React.FC = () => {
 				);
 				authCtx.login(data.idToken, expirationTime.toISOString());
 				navigate('/');
-				console.log(data);
+				message.success('Log in successfully!');
 			})
 			.catch((err: any) => message.error(err.message));
 	};
