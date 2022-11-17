@@ -1,8 +1,9 @@
-import {Form, Input, Modal, message } from 'antd';
+import { Form, Input, Modal, message } from 'antd';
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SIGN_UP_URL } from '../../constants/index';
+import axios from 'axios';
 import AuthContext from '../../store/auth-context';
-
 
 interface RegisterFormModalProps {
 	open: boolean;
@@ -17,51 +18,42 @@ const RegisterFormModal: React.FC<RegisterFormModalProps> = ({
 	const navigate = useNavigate();
 	const authCtx = useContext(AuthContext);
 
-	const signUpUrl =
-		'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCwKSCzYReCHtsBB42lVr9hSFKb6RZlbpY';
-
 	const onFinish = () => {
 		form
 			.validateFields()
-			.then((values) => {
+			.then(async (values) => {
 				form.resetFields();
-				fetch(signUpUrl, {
+
+				const res = await axios.request({
+					url: SIGN_UP_URL,
 					method: 'POST',
-					body: JSON.stringify({
+					params: {
 						email: values.email,
 						password: values.password,
 						returnSecureToken: true,
-					}),
+					},
 					headers: {
 						'Content-Type': 'application/json',
 					},
-				})
-					.then((res) => {
-						if (res.ok) {
-							return res.json();
-						} else {
-							return res.json().then((data) => {
-								let errorMessage = 'Authentication failed!';
+				});
 
-								if (data && data.error && data.error.message) {
-									errorMessage = data.error.message;
-								}
-								message.error(errorMessage)
-							});
-						}
-					})
-					.then((data) => {
-						const expirationTime = new Date(
-							new Date().getTime() + +data.expiresIn * 1000
-						);
-						authCtx.login(data.idToken, expirationTime.toISOString());
-
-						message.success('Sign up successfully!');
-						navigate('/');
-					})
-					.catch((err) => message.error(err.message));
+				if (res.status === 200) {
+					const expirationTime = new Date(
+						new Date().getTime() + res.data.expiresIn * 1000
+					);
+					authCtx.login(res.data.idToken, expirationTime);
+					navigate('/');
+					message.success('Log in successfully!');
+				} else {
+					let errorMessage = 'Authentication failed!';
+					if (res.data && res.data.error && res.data.error.message) {
+						errorMessage = res.data.error.message;
+					}
+					message.error(errorMessage);
+				}
 			})
 			.catch((info) => {
+				message.error(info.message);
 				console.log('Validate Failed:', info);
 			});
 	};

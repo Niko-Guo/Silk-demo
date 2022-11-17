@@ -15,8 +15,10 @@ import {
 
 import { ProCard } from '@ant-design/pro-components';
 import styled from 'styled-components';
+import { UserOutlined } from '@ant-design/icons';
 
 import RcResizeObserver from 'rc-resize-observer';
+import { EMPTY_STRING_PLACEHOLDER } from '../../../constants/index';
 import { dateFormat, getRandomItemsFromArray } from '../../../utilities/index';
 import { CodeInfo, Contributors } from './interface';
 
@@ -146,30 +148,40 @@ const RepoDetail: React.FC = () => {
 				</ProCard>
 				<ProCard title="About" size="default">
 					<div>
-						<p>{repoDetailInfo?.description}</p>
+						<p>{repoDetailInfo?.description ?? EMPTY_STRING_PLACEHOLDER}</p>
 					</div>
 
 					<Card>
 						<Timeline>
 							<Timeline.Item>
-								Pushed at {dateFormat(repoDetailInfo?.pushed_at)}
+								Pushed at{' '}
+								{dateFormat(repoDetailInfo?.pushed_at) ??
+									EMPTY_STRING_PLACEHOLDER}
 							</Timeline.Item>
 							<Timeline.Item>
-								Updated at {dateFormat(repoDetailInfo?.updated_at)}
+								Updated at{' '}
+								{dateFormat(repoDetailInfo?.updated_at) ??
+									EMPTY_STRING_PLACEHOLDER}
 							</Timeline.Item>
 							<Timeline.Item>
-								Created at {dateFormat(repoDetailInfo?.created_at)}
+								Created at{' '}
+								{dateFormat(repoDetailInfo?.created_at) ??
+									EMPTY_STRING_PLACEHOLDER}
 							</Timeline.Item>
 						</Timeline>
 					</Card>
 					<Card style={{ marginTop: 20 }} title="Contributors">
-						<Wrapper>
-							{contributors.map((item) => (
-								<div>
-									<Avatar src={item.avatar_url} alt={item.name} />
-								</div>
-							))}
-						</Wrapper>
+						{contributors.length ? (
+							<Wrapper>
+								{contributors.map((item) => (
+									<div>
+										<Avatar src={item.avatar_url} alt={item.name} />
+									</div>
+								))}
+							</Wrapper>
+						) : (
+							<Avatar icon={<UserOutlined />} />
+						)}
 					</Card>
 					<div style={{ display: 'flex', justifyContent: 'center' }}>
 						<Button
