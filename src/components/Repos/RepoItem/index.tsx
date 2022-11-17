@@ -65,7 +65,6 @@ const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 
 			setSearchCondition(params);
 
-			console.log(res);
 			setPagination({
 				current: res.config.params.page,
 				pageSize: res.config.params.per_page,
@@ -85,14 +84,14 @@ const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 			page: pagination.current,
 			per_page: pagination.pageSize,
 		});
-	}, [userName, pagination]);
+	}, [userName]);
 
 	return (
 		<Spin spinning={isLoading} size="large">
 			<Wrapper>
 				<Container>
 					{repoInfo.length ? (
-						repoInfo.map((item: any) => (
+						repoInfo.map((item: RepoInfo) => (
 							<Card
 								key={item.RepoId}
 								hoverable

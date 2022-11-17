@@ -19,7 +19,6 @@ const AuthForm: React.FC = () => {
 
 	const [isOpen, setIsOpen] = useState(false);
 	const [logInLoading, setLogInLoading] = useState(true);
-
 	const navigate = useNavigate();
 
 	const onFinish = (values: LoginValue) => {

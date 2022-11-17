@@ -37,6 +37,36 @@ const apiService = {
 			},
 		});
 	},
+
+	getRepoDetailInfo(repoOwner?: string, repoName?: string): Promise<any> {
+		return axios.request({
+			url: `https://api.github.com/repos/${repoOwner}/${repoName}`,
+			method: 'GET',
+			headers: {
+				accept: 'application/vnd.github+json',
+			},
+		});
+	},
+
+	getContributors(repoOwner?: string, repoName?: string): Promise<any> {
+		return axios.request({
+			url: `https://api.github.com/repos/${repoOwner}/${repoName}/contributors`,
+			method: 'GET',
+			headers: {
+				accept: 'application/vnd.github+json',
+			},
+		});
+	},
+
+	getCodeBaseInfo(repoOwner?: string, repoName?: string): Promise<any> {
+		return axios.request({
+			url: `https://api.github.com/repos/${repoOwner}/${repoName}/contents`,
+			method: 'GET',
+			headers: {
+				accept: 'application/vnd.github+json',
+			},
+		});
+	},
 };
 
 export default apiService;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import apiService from '../../../service/apiService';
 import moment from 'moment';
 import {
 	Statistic,
@@ -18,6 +18,7 @@ import styled from 'styled-components';
 
 import RcResizeObserver from 'rc-resize-observer';
 import { dateFormat, getRandomItemsFromArray } from '../../../utilities/index';
+import { CodeInfo, Contributors } from './interface';
 
 const Wrapper = styled.div`
 	display: flex;
@@ -28,35 +29,21 @@ const Wrapper = styled.div`
 
 const RepoDetail: React.FC = () => {
 	const [repoDetailInfo, setRepoDetailInfo] = useState<any>([]);
-
-	const [contributors, setContributors] = useState([]);
-
-	const [codeInfo, setCodeInfo] = useState<any>([]);
+	const [contributors, setContributors] = useState<Contributors[]>([]);
+	const [codeInfo, setCodeInfo] = useState<CodeInfo[]>([]);
 	const [responsive, setResponsive] = useState(false);
 	const { repoOwner, repoName } = useParams();
 
-	const getRepoDetailInfo = async (repoOwner?: string, repoName?: string) => {
-		const res = await axios.request({
-			url: `https://api.github.com/repos/${repoOwner}/${repoName}`,
-			method: 'GET',
-			headers: {
-				accept: 'application/vnd.github+json',
-			},
-		});
+	const fetchRepoDetailInfo = async (repoOwner?: string, repoName?: string) => {
+		const res = await apiService.getRepoDetailInfo(repoOwner, repoName);
 
 		if (res.status === 200) {
 			setRepoDetailInfo(res.data);
 		}
 	};
 
-	const getContributors = async (repoOwner?: string, repoName?: string) => {
-		const res = await axios.request({
-			url: `https://api.github.com/repos/${repoOwner}/${repoName}/contributors`,
-			method: 'GET',
-			headers: {
-				accept: 'application/vnd.github+json',
-			},
-		});
+	const fetchContributors = async (repoOwner?: string, repoName?: string) => {
+		const res = await apiService.getContributors(repoOwner, repoName);
 
 		if (res.status === 200) {
 			setContributors(
@@ -64,21 +51,14 @@ const RepoDetail: React.FC = () => {
 					.map((item) => ({
 						name: item.login,
 						avatar_url: item.avatar_url,
-						contributions: item.contributions,
 					}))
 					.slice(0, 15)
 			);
 		}
 	};
 
-	const getCodeInfo = async (repoOwner?: string, repoName?: string) => {
-		const res = await axios.request({
-			url: `https://api.github.com/repos/${repoOwner}/${repoName}/contents`,
-			method: 'GET',
-			headers: {
-				accept: 'application/vnd.github+json',
-			},
-		});
+	const fetchCodeBaseInfo = async (repoOwner?: string, repoName?: string) => {
+		const res = await apiService.getCodeBaseInfo(repoOwner, repoName);
 
 		if (res.status === 200) {
 			setCodeInfo(
@@ -88,9 +68,9 @@ const RepoDetail: React.FC = () => {
 	};
 
 	useEffect(() => {
-		getRepoDetailInfo(repoOwner, repoName);
-		getContributors(repoOwner, repoName);
-		getCodeInfo(repoOwner, repoName);
+		fetchRepoDetailInfo(repoOwner, repoName);
+		fetchContributors(repoOwner, repoName);
+		fetchCodeBaseInfo(repoOwner, repoName);
 	}, [repoOwner, repoName]);
 
 	return (
@@ -148,10 +128,7 @@ const RepoDetail: React.FC = () => {
 						<List
 							header={
 								<div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-									<Avatar
-										src={repoDetailInfo?.owner?.avatar_url}
-										alt="Han Solo"
-									/>
+									<Avatar src={repoDetailInfo?.owner?.avatar_url} />
 									<div>
 										Pushed at{' '}
 										{moment(repoDetailInfo?.pushed_at).format('MMMM Do YYYY')}
@@ -187,9 +164,9 @@ const RepoDetail: React.FC = () => {
 					</Card>
 					<Card style={{ marginTop: 20 }} title="Contributors">
 						<Wrapper>
-							{contributors.map((item: any) => (
+							{contributors.map((item) => (
 								<div>
-									<Avatar src={item.avatar_url} />
+									<Avatar src={item.avatar_url} alt={item.name} />
 								</div>
 							))}
 						</Wrapper>
@@ -200,6 +177,7 @@ const RepoDetail: React.FC = () => {
 							size="large"
 							style={{ marginTop: 50 }}
 							href={`https://github.com/${repoOwner}`}
+							target="_blank"
 						>
 							More Info
 						</Button>
