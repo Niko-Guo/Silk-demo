@@ -24,17 +24,13 @@ const apiService = {
 		});
 	},
 
-	getReposByUsername(
-		userName: string,
-		page: number,
-		per_page: number
-	): Promise<any> {
+	getReposByUsername(params): Promise<any> {
 		return axios.request({
-			url: `https://api.github.com/search/repositories?q=user:${userName}`,
+			url: `https://api.github.com/search/repositories?q=user:${params.userName}`,
 			method: 'GET',
 			params: {
-				page,
-				per_page,
+				page: params.page,
+				per_page: params.per_page,
 			},
 			headers: {
 				accept: 'application/vnd.github+json',

@@ -1,28 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { authContextObj } from './interface';
 
 let logoutTimer;
-
-interface authContextObj {
-	token: string
-	isLoggedIn: boolean;
-	login: (token: string, expirationTime: string) => void;
-	logout: () => void;
-}
 
 const AuthContext = React.createContext<authContextObj>({
 	token: '',
 	isLoggedIn: false,
-	login: (token, expirationTime) => {},
+	login: () => {},
 	logout: () => {},
 });
 
-const calculateRemainingTime = (expirationTime) => {
+const calculateRemainingTime = (expirationTime: string | null) => {
 	const currentTime = new Date().getTime();
-	const adjustExpirationTime = new Date(expirationTime).getTime();
 
-	const remainingDuration = adjustExpirationTime - currentTime;
+	if (expirationTime !== null) {
+		const adjustExpirationTime = new Date(expirationTime).getTime();
 
-	return remainingDuration;
+		return adjustExpirationTime - currentTime;
+	}
+
+	return 0;
 };
 
 const retrieveStoredToken = () => {
@@ -66,7 +63,7 @@ export const AuthContextProvider = (props) => {
 		}
 	}, []);
 
-	const loginHandler = (token, expirationTime) => {
+	const loginHandler = (token: string, expirationTime: any) => {
 		setToken(token);
 		localStorage.setItem('token', token);
 		localStorage.setItem('expirationTime', expirationTime);
@@ -83,7 +80,7 @@ export const AuthContextProvider = (props) => {
 		}
 	}, [tokenData, logoutHandler]);
 
-	const contextValue: any = {
+	const contextValue: authContextObj = {
 		token: token,
 		isLoggedIn: userIsLoggedIn,
 		login: loginHandler,

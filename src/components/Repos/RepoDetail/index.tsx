@@ -90,7 +90,6 @@ const RepoDetail: React.FC = () => {
 	useEffect(() => {
 		getRepoDetailInfo(repoOwner, repoName);
 		getContributors(repoOwner, repoName);
-
 		getCodeInfo(repoOwner, repoName);
 	}, [repoOwner, repoName]);
 

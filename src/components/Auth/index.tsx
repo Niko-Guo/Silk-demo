@@ -4,7 +4,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import AuthContext from '../../store/auth-context';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-
+import { LoginValue } from './interface';
 import RegisterFormModal from './RegisterFormModal';
 
 const Wrapper = styled.div`
@@ -16,14 +16,13 @@ const Wrapper = styled.div`
 
 const AuthForm: React.FC = () => {
 	const authCtx = useContext(AuthContext);
+
 	const [isOpen, setIsOpen] = useState(false);
 	const [logInLoading, setLogInLoading] = useState(true);
 
 	const navigate = useNavigate();
 
-	const onFinish = (values: any) => {
-		console.log('Received values of form: ', values);
-
+	const onFinish = (values: LoginValue) => {
 		const logInUrl =
 			'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCwKSCzYReCHtsBB42lVr9hSFKb6RZlbpY';
 
@@ -48,16 +47,15 @@ const AuthForm: React.FC = () => {
 						if (data && data.error && data.error.message) {
 							errorMessage = data.error.message;
 						}
-
-						throw new Error(errorMessage);
+						message.error(errorMessage);
 					});
 				}
 			})
 			.then((data) => {
 				const expirationTime = new Date(
-					new Date().getTime() + +data.expiresIn * 1000
+					new Date().getTime() + data.expiresIn * 1000
 				);
-				authCtx.login(data.idToken, expirationTime.toISOString());
+				authCtx.login(data.idToken, expirationTime);
 				navigate('/');
 				message.success('Log in successfully!');
 			})
