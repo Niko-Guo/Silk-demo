@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Card, Spin, Pagination, Empty } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Card, Spin, Pagination, Empty, message } from 'antd';
 import { RepoInfo } from '../interface';
 import styled from 'styled-components';
 
@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import apiService from '../../../service/apiService';
 
 import { EMPTY_STRING_PLACEHOLDER } from '../../../constants/index';
+import { RepoItemProps, PaginationType, SearchParams } from './interface';
 
 const Wrapper = styled.div`
 	.ant-pagination {
@@ -33,51 +34,64 @@ const Container = styled.div`
 	}
 `;
 
-interface RepoItemProps {
-	userName: string;
-}
-
 const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 	const [repoInfo, setRepoInfo] = useState<RepoInfo[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const [total, setTotal] = useState(100);
+	const [pagination, setPagination] = useState<PaginationType>({
+		current: 1,
+		pageSize: 18,
+		total: 1,
+	});
+
+	const [searchCondition, setSearchCondition] = useState<SearchParams>();
 
 	const navigate = useNavigate();
 
-	const fetchReposByUsername = useCallback(
-		async (userName: string, page: number = 1, per_page: number = 18) => {
-			setIsLoading(true);
+	const fetchReposByUsername = async (params: SearchParams) => {
+		setIsLoading(true);
 
-			const res = await apiService.getReposByUsername(userName, page, per_page);
+		const res = await apiService.getReposByUsername(params);
 
-			if (res.status === 200) {
-				setRepoInfo(
-					res.data.items.map((item) => ({
-						RepoId: item.id,
-						RepoOwner: item.owner.login,
-						RepoName: item.name,
-						RepoDescription: item.description,
-					}))
-				);
-				setTotal(res.data.total_count);
+		if (res.status === 200) {
+			setRepoInfo(
+				res.data.items.map((item) => ({
+					RepoId: item.id,
+					RepoOwner: item.owner.login,
+					RepoName: item.name,
+					RepoDescription: item.description,
+				}))
+			);
 
-				setIsLoading(false);
-			}
-		},
-		[]
-	);
+			setSearchCondition(params);
+
+			setPagination({
+				current: res.config.params.page,
+				pageSize: res.config.params.per_page,
+				total: res.data.total_count,
+			});
+
+			setIsLoading(false);
+		} else {
+			message.error(res.message);
+			setIsLoading(false);
+		}
+	};
 
 	useEffect(() => {
-		fetchReposByUsername(userName);
-	}, [userName, fetchReposByUsername]);
+		fetchReposByUsername({
+			userName: userName,
+			page: pagination.current,
+			per_page: pagination.pageSize,
+		});
+	}, [userName]);
 
 	return (
 		<Spin spinning={isLoading} size="large">
 			<Wrapper>
 				<Container>
 					{repoInfo.length ? (
-						repoInfo.map((item: any) => (
+						repoInfo.map((item: RepoInfo) => (
 							<Card
 								key={item.RepoId}
 								hoverable
@@ -106,8 +120,10 @@ const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 				<Pagination
 					className="pagination"
 					defaultCurrent={1}
-					total={total}
-					onChange={(page) => fetchReposByUsername(userName, page)}
+					total={pagination.total}
+					onChange={(page) =>
+						fetchReposByUsername({ ...searchCondition, page })
+					}
 					showSizeChanger={false}
 				/>
 			</Wrapper>

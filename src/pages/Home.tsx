@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Button, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
+;
 
 const HomeWrapper = styled.div`
 	display: flex;
@@ -13,6 +14,7 @@ const HomeWrapper = styled.div`
 
 const Home: React.FC = () => {
 	const navigate = useNavigate();
+
 	const [homePageLoading, setHomePageLoading] = useState(true);
 
 	useEffect(() => {

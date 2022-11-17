@@ -5,8 +5,7 @@ import { ProCard } from '@ant-design/pro-components';
 import PersonalInfo from './PersonalInfo';
 import RepoItem from './RepoItem';
 import SearchBar from './SearchBar';
-import apiService  from '../../service/apiService';
-
+import apiService from '../../service/apiService';
 
 const RepoList: React.FC = () => {
 	const [userOptions, setUserOptions] = useState<UserOptionType[]>();

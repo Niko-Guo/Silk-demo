@@ -46,8 +46,7 @@ const RegisterFormModal: React.FC<RegisterFormModalProps> = ({
 								if (data && data.error && data.error.message) {
 									errorMessage = data.error.message;
 								}
-
-								throw new Error(errorMessage);
+								message.error(errorMessage)
 							});
 						}
 					})
@@ -99,7 +98,8 @@ const RegisterFormModal: React.FC<RegisterFormModalProps> = ({
 					rules={[
 						{
 							required: true,
-							message: 'Please input your password!',
+							min: 6,
+							message: 'The length of your password should greater than 6!',
 						},
 					]}
 					hasFeedback
@@ -115,6 +115,7 @@ const RegisterFormModal: React.FC<RegisterFormModalProps> = ({
 					rules={[
 						{
 							required: true,
+							min: 6,
 							message: 'Please confirm your password!',
 						},
 						({ getFieldValue }) => ({
