@@ -23,7 +23,6 @@ const AuthForm: React.FC = () => {
 	const navigate = useNavigate();
 
 	const onFinish = async (values: LoginValue) => {
-	
 		fetch(LOG_IN_URL, {
 			method: 'POST',
 			body: JSON.stringify({
@@ -74,7 +73,12 @@ const AuthForm: React.FC = () => {
 					name="normal_login"
 					initialValues={{ remember: true }}
 					onFinish={onFinish}
-					style={{ width: 300 }}
+					style={{
+						width: 400,
+						boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+						borderRadius: 6,
+						padding: 20
+					}}
 				>
 					<Form.Item
 						name="email"
