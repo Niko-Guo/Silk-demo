@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { LoginValue } from './interface';
 import { LOG_IN_URL } from '../../constants/index';
 import RegisterFormModal from './RegisterFormModal';
-import axios from 'axios';
 
 const Wrapper = styled.div`
 	display: flex;
@@ -24,35 +23,42 @@ const AuthForm: React.FC = () => {
 	const navigate = useNavigate();
 
 	const onFinish = async (values: LoginValue) => {
-		
-		const res = await axios.request({
-			url: LOG_IN_URL,
+	
+		fetch(LOG_IN_URL, {
 			method: 'POST',
-			params: {
+			body: JSON.stringify({
 				email: values.email,
 				password: values.password,
 				returnSecureToken: true,
-			},
+			}),
 			headers: {
 				'Content-Type': 'application/json',
 			},
-		}).catch(err => message.error(err.message));
+		})
+			.then((res) => {
+				if (res.ok) {
+					return res.json();
+				} else {
+					return res.json().then((data) => {
+						let errorMessage = 'Authentication failed!';
 
-		if (res.status === 200) {
-			const expirationTime = new Date(
-				new Date().getTime() + res.data.expiresIn * 1000
-			);
-			authCtx.login(res.data.idToken, expirationTime);
-			navigate('/');
-			message.success('Log in successfully!');
-		} else  {
-			let errorMessage = 'Authentication failed!';
-			if (res.data && res.data.error && res.data.error.message) {
-				errorMessage = res.data.error.message;
-				console.log(errorMessage)
-			}
-			message.error(errorMessage);
-		}
+						if (data && data.error && data.error.message) {
+							errorMessage = data.error.message;
+						}
+
+						throw new Error(errorMessage);
+					});
+				}
+			})
+			.then((data) => {
+				const expirationTime = new Date(
+					new Date().getTime() + +data.expiresIn * 1000
+				);
+				authCtx.login(data.idToken, expirationTime.toISOString());
+				navigate('/');
+				message.success('Log in successfully!');
+			})
+			.catch((err: any) => message.error(err.message));
 	};
 
 	useEffect(() => {
