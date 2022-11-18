@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { SearchParams } from '../components/Repos/RepoItem/interface';
 
 const apiService = {
 	getAllUsers(): Promise<any> {
@@ -24,7 +25,7 @@ const apiService = {
 		});
 	},
 
-	getReposByUsername(params): Promise<any> {
+	getReposByUsername(params: SearchParams): Promise<any> {
 		return axios.request({
 			url: `https://api.github.com/search/repositories?q=user:${params.userName}`,
 			method: 'GET',

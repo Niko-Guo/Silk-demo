@@ -20,7 +20,7 @@ const RegisterFormModal: React.FC<RegisterFormModalProps> = ({
 	const onFinish = () => {
 		form
 			.validateFields()
-			.then(async (values) => {
+			.then((values) => {
 				form.resetFields();
 
 				fetch(SIGN_UP_URL, {

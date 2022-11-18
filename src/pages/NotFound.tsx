@@ -1,7 +1,8 @@
-import React from 'react';
-import { Button } from 'antd';
+import React, { useContext } from 'react';
+import { Button, message } from 'antd';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import AuthContext from '../store/auth-context';
 
 const Wrapper = styled.div`
 	flex: 0 1 auto;
@@ -22,6 +23,16 @@ const Title = styled.div`
 `;
 const NotFound: React.FC = () => {
 	const navigate = useNavigate();
+	const authCtx = useContext(AuthContext);
+
+	const location = useLocation();
+
+	if (!authCtx.isLoggedIn) {
+		message.error('Please login first!');
+		navigate('/login');
+	} else if (authCtx.isLoggedIn && location.pathname.slice(1) === 'login') {
+		message.error('Please logout first!');
+	}
 
 	return (
 		<Wrapper>
