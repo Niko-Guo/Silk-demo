@@ -119,7 +119,9 @@ const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 
 				<Pagination
 					className="pagination"
-					defaultCurrent={1}
+					defaultCurrent={1} 
+					current={pagination.current}
+					pageSize={18}
 					total={pagination.total}
 					onChange={(page) =>
 						fetchReposByUsername({ ...searchCondition, page })

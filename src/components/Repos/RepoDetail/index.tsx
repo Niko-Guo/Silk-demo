@@ -142,7 +142,9 @@ const RepoDetail: React.FC = () => {
 							}
 							bordered
 							dataSource={codeInfo}
-							renderItem={(item: any) => <List.Item>{item}</List.Item>}
+							renderItem={(item: any, index) => (
+								<List.Item key={index}>{item}</List.Item>
+							)}
 						/>
 					</div>
 				</ProCard>
