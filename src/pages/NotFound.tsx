@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Button, message } from 'antd';
 import styled from 'styled-components';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import AuthContext from '../store/auth-context';
 
 const Wrapper = styled.div`
@@ -29,7 +29,7 @@ const NotFound: React.FC = () => {
 
 	if (!authCtx.isLoggedIn) {
 		message.error('Please login first!');
-		navigate('/login');
+		return <Navigate to='/login'/>
 	} else if (authCtx.isLoggedIn && location.pathname.slice(1) === 'login') {
 		message.error('Please logout first!');
 	}
