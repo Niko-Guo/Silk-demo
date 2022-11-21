@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import apiService from '../../../service/apiService';
 import { EMPTY_STRING_PLACEHOLDER } from '../../../constants/index';
 
-
 const Wrapper = styled.div`
 	display: flex;
 	flex-direction: column;
@@ -39,6 +38,10 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({ userName }) => {
 	const fetchUserDetailInfo = useCallback(async (userName: string) => {
 		setIsLoading(true);
 
+		if (userName === '') {
+			setUserInfo([]);
+			setIsLoading(false);
+		}
 		const res = await apiService.getUserDetailInfo(userName);
 
 		if (res.status === 200) {
@@ -48,7 +51,9 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({ userName }) => {
 	}, []);
 
 	useEffect(() => {
-		fetchUserDetailInfo(userName);
+		if (userName !== '') {
+			fetchUserDetailInfo(userName);
+		}
 	}, [userName, fetchUserDetailInfo]);
 
 	return (

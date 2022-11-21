@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import apiService from '../../../service/apiService';
-import moment from 'moment';
 import {
 	Statistic,
 	Divider,
@@ -15,12 +14,16 @@ import {
 
 import { ProCard } from '@ant-design/pro-components';
 import styled from 'styled-components';
-import { UserOutlined } from '@ant-design/icons';
+import {
+	UserOutlined,
+	FolderOpenFilled,
+	FileTextOutlined,
+} from '@ant-design/icons';
 
 import RcResizeObserver from 'rc-resize-observer';
 import { EMPTY_STRING_PLACEHOLDER } from '../../../constants/index';
-import { dateFormat, getRandomItemsFromArray } from '../../../utilities/index';
-import { CodeInfo, Contributors } from './interface';
+import { dateFormat } from '../../../utilities/index';
+import { ContributorsType, fileDetailType } from './interface';
 
 const Wrapper = styled.div`
 	display: flex;
@@ -29,10 +32,17 @@ const Wrapper = styled.div`
 	gap: 10px;
 `;
 
+const ListWrapper = styled.div`
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	gap: 10px;
+`;
+
 const RepoDetail: React.FC = () => {
 	const [repoDetailInfo, setRepoDetailInfo] = useState<any>([]);
-	const [contributors, setContributors] = useState<Contributors[]>([]);
-	const [codeInfo, setCodeInfo] = useState<CodeInfo[]>([]);
+	const [contributors, setContributors] = useState<ContributorsType[]>([]);
+	const [fileDetail, setFileDetail] = useState<fileDetailType[]>([]);
 	const [responsive, setResponsive] = useState(false);
 	const { repoOwner, repoName } = useParams();
 
@@ -63,8 +73,15 @@ const RepoDetail: React.FC = () => {
 		const res = await apiService.getCodeBaseInfo(repoOwner, repoName);
 
 		if (res.status === 200) {
-			setCodeInfo(
-				getRandomItemsFromArray([...res.data.map((item) => item.name)], 10)
+			setFileDetail(
+				res.data
+					.map((item) => ({
+						name: item.name,
+						fileType: item.type,
+					}))
+					.sort((a, b) =>
+						a.fileType < b.fileType ? -1 : a.fileType > b.fileType ? 1 : 0
+					)
 			);
 		}
 	};
@@ -133,7 +150,8 @@ const RepoDetail: React.FC = () => {
 									<Avatar src={repoDetailInfo?.owner?.avatar_url} />
 									<div>
 										Pushed at{' '}
-										{moment(repoDetailInfo?.pushed_at).format('MMMM Do YYYY')}
+										{dateFormat(repoDetailInfo?.pushed_at) ??
+											EMPTY_STRING_PLACEHOLDER}
 									</div>
 									<div style={{ marginLeft: 380, fontWeight: 'bold' }}>
 										{repoDetailInfo?.language}
@@ -141,9 +159,23 @@ const RepoDetail: React.FC = () => {
 								</div>
 							}
 							bordered
-							dataSource={codeInfo}
+							dataSource={fileDetail.map((item) => item.name)}
 							renderItem={(item: any, index) => (
-								<List.Item key={index}>{item}</List.Item>
+								<List.Item key={index}>
+									<ListWrapper>
+										{fileDetail.find((fileItem) => fileItem.name === item)
+											?.fileType === 'dir' ? (
+											<FolderOpenFilled
+												style={{ fontSize: 30, color: '#1890ff' }}
+											/>
+										) : (
+											<FileTextOutlined
+												style={{ fontSize: 30, marginLeft: -3 }}
+											/>
+										)}
+										{item}
+									</ListWrapper>
+								</List.Item>
 							)}
 						/>
 					</div>
@@ -175,9 +207,9 @@ const RepoDetail: React.FC = () => {
 					<Card style={{ marginTop: 20 }} title="Contributors">
 						{contributors.length ? (
 							<Wrapper>
-								{contributors.map((item) => (
+								{contributors.map((item, index) => (
 									<div>
-										<Avatar src={item.avatar_url} alt={item.name} />
+										<Avatar key={index} src={item.avatar_url} alt={item.name} />
 									</div>
 								))}
 							</Wrapper>
@@ -190,7 +222,7 @@ const RepoDetail: React.FC = () => {
 							type="primary"
 							size="large"
 							style={{ marginTop: 50 }}
-							href={`https://github.com/${repoOwner}`}
+							href={`https://github.com/${repoOwner}/${repoName}`}
 							target="_blank"
 						>
 							More Info

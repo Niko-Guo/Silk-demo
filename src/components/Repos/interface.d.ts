@@ -1,7 +1,3 @@
-export interface UserOptionType {
-	label: string;
-	name: string;
-}
 
 export interface RepoInfo {
 	RepoId: number;
