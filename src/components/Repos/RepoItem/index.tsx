@@ -38,6 +38,7 @@ const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 	const [repoInfo, setRepoInfo] = useState<RepoInfo[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 
+
 	const [pagination, setPagination] = useState<PaginationType>({
 		current: 1,
 		pageSize: 18,
@@ -50,13 +51,6 @@ const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 
 	const fetchReposByUsername = async (params: SearchParams) => {
 		setIsLoading(true);
-
-		if (params.userName === '') {
-			setRepoInfo([]);
-			setSearchCondition({});
-			// setPagination({});
-			setIsLoading(false);
-		}
 
 		const res = await apiService.getReposByUsername(params);
 
@@ -85,13 +79,11 @@ const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 	};
 
 	useEffect(() => {
-		if (userName !== '') {
-			fetchReposByUsername({
-				userName: userName,
-				page: pagination.current,
-				per_page: pagination.pageSize,
-			});
-		}
+		fetchReposByUsername({
+			userName: userName,
+			page: pagination.current,
+			per_page: pagination.pageSize,
+		});
 	}, [userName]);
 
 	return (

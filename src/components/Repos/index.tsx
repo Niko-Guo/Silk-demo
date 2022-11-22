@@ -5,7 +5,7 @@ import RepoItem from './RepoItem';
 import SearchBar from './SearchBar';
 
 const RepoList: React.FC = () => {
-	const [userSelectedOption, setUserSelectedOption] = useState('');
+	const [userSelectedOption, setUserSelectedOption] = useState('Ky-Ling');
 
 	const userSelectOptionHandler = (value: string) => {
 		setUserSelectedOption(value);
@@ -18,9 +18,7 @@ const RepoList: React.FC = () => {
 			</ProCard>
 			<ProCard split="horizontal">
 				<ProCard headerBordered>
-					<SearchBar
-						selectUser={userSelectOptionHandler}
-					/>
+					<SearchBar selectUser={userSelectOptionHandler} />
 				</ProCard>
 				<ProCard headerBordered>
 					<RepoItem userName={userSelectedOption} />

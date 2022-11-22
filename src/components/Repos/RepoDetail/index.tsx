@@ -39,6 +39,10 @@ const ListWrapper = styled.div`
 	gap: 10px;
 `;
 
+// https://api.github.com/repos/Ky-Ling/Flask-Basic/contents/1-Basic.py
+// File ==> repoDetail.git_url --> get the actual content
+// Dir ==> repoDetail.git_url --> trees --> tree --> get the list of files in this folder --> get the url
+
 const RepoDetail: React.FC = () => {
 	const [repoDetailInfo, setRepoDetailInfo] = useState<any>([]);
 	const [contributors, setContributors] = useState<ContributorsType[]>([]);

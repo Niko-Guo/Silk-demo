@@ -38,10 +38,6 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({ userName }) => {
 	const fetchUserDetailInfo = useCallback(async (userName: string) => {
 		setIsLoading(true);
 
-		if (userName === '') {
-			setUserInfo([]);
-			setIsLoading(false);
-		}
 		const res = await apiService.getUserDetailInfo(userName);
 
 		if (res.status === 200) {
@@ -51,9 +47,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({ userName }) => {
 	}, []);
 
 	useEffect(() => {
-		if (userName !== '') {
-			fetchUserDetailInfo(userName);
-		}
+		fetchUserDetailInfo(userName);
 	}, [userName, fetchUserDetailInfo]);
 
 	return (
