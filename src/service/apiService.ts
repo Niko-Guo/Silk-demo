@@ -2,19 +2,6 @@ import axios from 'axios';
 import { SearchParams } from '../components/Repos/RepoItem/interface';
 
 const apiService = {
-	getAllUsers(): Promise<any> {
-		return axios.request({
-			url: `https://api.github.com/users`,
-			method: 'GET',
-			headers: {
-				accept: 'application/vnd.github+json',
-			},
-			params: {
-				per_page: 100,
-			},
-		});
-	},
-
 	getUserDetailInfo(userName: string): Promise<any> {
 		return axios.request({
 			url: `https://api.github.com/users/${userName}`,

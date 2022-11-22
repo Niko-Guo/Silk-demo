@@ -6,6 +6,7 @@ import AllRepos from './pages/AllRepos';
 import RepoDetail from './pages/SingleRepo';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
+import ResetPassword from './components/Auth/ResetPassword';
 import AuthContext from './store/auth-context';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
 						path="/repos/:repoOwner/:repoName/:repoId"
 						element={<RepoDetail />}
 					/>
+					<Route path="/reset-password" element={<ResetPassword />} />
 					<Route path="*" element={<NotFound />} />
 				</Route>
 			)}

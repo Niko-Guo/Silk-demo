@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { NavLink, Link } from 'react-router-dom';
-import { Button, message, Popconfirm } from 'antd';
-import { LoginOutlined } from '@ant-design/icons';
+import { Button, message, Popconfirm, Popover, Tooltip } from 'antd';
+import { LoginOutlined, SettingOutlined, KeyOutlined } from '@ant-design/icons';
 import AuthContext from '../../store/auth-context';
 
 const NavBarWrapper = styled.div`
@@ -41,6 +41,7 @@ const LogOutButton = styled(Button)`
 
 const NavBar: React.FC = () => {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const authCtx = useContext(AuthContext);
 
 	const onConfirm = () => {
@@ -72,15 +73,44 @@ const NavBar: React.FC = () => {
 					Repos
 				</NavLink>
 			</nav>
-			<Popconfirm
+			<Popover
+				content={
+					<>
+						<Tooltip title="Reset Password">
+							<Button
+								size="large"
+								icon={<KeyOutlined />}
+								style={{ borderStyle: 'none' }}
+								onClick={() => {
+									if (location.pathname.slice(1) === 'reset-password') {
+										message.error('Already in the reset password page!');
+									} else {
+										navigate(`/reset-password`);
+									}
+								}}
+							/>
+						</Tooltip>
+						<Tooltip title="Log out">
+							<Popconfirm
+								placement="bottomRight"
+								title="Are you sure to logout?"
+								onConfirm={onConfirm}
+								okText="Yes"
+								cancelText="No"
+							>
+								<LogOutButton
+									size="large"
+									icon={<LoginOutlined />}
+								></LogOutButton>
+							</Popconfirm>
+						</Tooltip>
+					</>
+				}
 				placement="bottomRight"
-				title="Are you sure to logout?"
-				onConfirm={onConfirm}
-				okText="Yes"
-				cancelText="No"
+				trigger="click"
 			>
-				<LogOutButton icon={<LoginOutlined />}></LogOutButton>
-			</Popconfirm>
+				<Button icon={<SettingOutlined />} style={{ borderStyle: 'none' }} />
+			</Popover>
 		</NavBarWrapper>
 	);
 };

@@ -5,7 +5,7 @@ import RepoItem from './RepoItem';
 import SearchBar from './SearchBar';
 
 const RepoList: React.FC = () => {
-	const [userSelectedOption, setUserSelectedOption] = useState('Ky-Ling');
+	const [userSelectedOption, setUserSelectedOption] = useState('hh');
 
 	const userSelectOptionHandler = (value: string) => {
 		setUserSelectedOption(value);

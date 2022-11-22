@@ -5,7 +5,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { AuthContextProvider } from './store/auth-context';
 import en_US from 'antd/es/locale/en_US';
-import './index.css';
 import 'antd/dist/antd.css';
 
 const root = ReactDOM.createRoot(
