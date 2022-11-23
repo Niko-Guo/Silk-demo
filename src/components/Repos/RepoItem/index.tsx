@@ -38,7 +38,6 @@ const RepoItem: React.FC<RepoItemProps> = ({ userName }) => {
 	const [repoInfo, setRepoInfo] = useState<RepoInfo[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 
-
 	const [pagination, setPagination] = useState<PaginationType>({
 		current: 1,
 		pageSize: 18,

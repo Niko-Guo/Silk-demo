@@ -21,6 +21,11 @@ const RegisterFormModal: React.FC<RegisterFormModalProps> = ({
 		form
 			.validateFields()
 			.then((values) => {
+				
+				if (!values.email.includes('@')) {
+					message.error("Your email address must include'@', please try again :)");
+					return;
+				}
 				form.resetFields();
 
 				fetch(SIGN_UP_URL, {
@@ -55,7 +60,7 @@ const RegisterFormModal: React.FC<RegisterFormModalProps> = ({
 						);
 						authCtx.login(data.idToken, expirationTime.toISOString());
 
-						message.success('Sign up successfully!');
+						message.success('Sign up successfully :)');
 						navigate('/');
 					})
 					.catch((err) => message.error(err.message));

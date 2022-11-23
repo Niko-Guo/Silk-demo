@@ -19,15 +19,15 @@ import {
 	FolderOpenFilled,
 	FileTextOutlined,
 } from '@ant-design/icons';
-
+import { BASE_REQUEST_URL } from '../../../constants/index';
 import RcResizeObserver from 'rc-resize-observer';
 import { EMPTY_STRING_PLACEHOLDER } from '../../../constants/index';
 import { dateFormat } from '../../../utilities/index';
 import { ContributorsType, fileDetailType } from './interface';
+import useHttp from '../../../hooks/useHttp';
 
 const Wrapper = styled.div`
 	display: flex;
-
 	justify-content: flex-start;
 	gap: 10px;
 `;
@@ -46,13 +46,24 @@ const RepoDetail: React.FC = () => {
 	const [responsive, setResponsive] = useState(false);
 	const { repoOwner, repoName } = useParams();
 
-	const fetchRepoDetailInfo = async (repoOwner?: string, repoName?: string) => {
-		const res = await apiService.getRepoDetailInfo(repoOwner, repoName);
+	const { sendRequest } = useHttp();
 
-		if (res.status === 200) {
-			setRepoDetailInfo(res.data);
-		}
+	const fetchRepoDetailInfo = async (repoOwner?: string, repoName?: string) => {
+		sendRequest(
+			{
+				url: `${BASE_REQUEST_URL}/repos/${repoOwner}/${repoName}`,
+			},
+			setRepoDetailInfo
+		);
 	};
+
+	// const fetchRepoDetailInfo = async (repoOwner?: string, repoName?: string) => {
+	// 	const res = await apiService.getRepoDetailInfo(repoOwner, repoName);
+
+	// 	if (res.status === 200) {
+	// 		setRepoDetailInfo(res.data);
+	// 	}
+	// };
 
 	const fetchContributors = async (repoOwner?: string, repoName?: string) => {
 		const res = await apiService.getContributors(repoOwner, repoName);

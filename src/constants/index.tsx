@@ -1,5 +1,7 @@
 export const EMPTY_STRING_PLACEHOLDER = '--';
 
+export const BASE_REQUEST_URL = 'https://api.github.com';
+
 export const LOG_IN_URL =
 	'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCwKSCzYReCHtsBB42lVr9hSFKb6RZlbpY';
 

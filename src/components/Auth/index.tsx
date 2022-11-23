@@ -23,6 +23,7 @@ const AuthForm: React.FC = () => {
 	const navigate = useNavigate();
 
 	const onFinish = async (values: LoginValue) => {
+	
 		fetch(LOG_IN_URL, {
 			method: 'POST',
 			body: JSON.stringify({
@@ -55,7 +56,7 @@ const AuthForm: React.FC = () => {
 				);
 				authCtx.login(data.idToken, expirationTime.toISOString());
 				navigate('/');
-				message.success('Log in successfully!');
+				message.success('Log in successfully :)');
 			})
 			.catch((err: any) => message.error(err.message));
 	};
@@ -77,7 +78,7 @@ const AuthForm: React.FC = () => {
 						width: 400,
 						boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
 						borderRadius: 6,
-						padding: 20
+						padding: 20,
 					}}
 				>
 					<Form.Item

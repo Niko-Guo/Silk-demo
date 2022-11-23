@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Avatar, Spin } from 'antd';
 import styled from 'styled-components';
-
+import { BASE_REQUEST_URL } from '../../../constants/index';
 import apiService from '../../../service/apiService';
 import { EMPTY_STRING_PLACEHOLDER } from '../../../constants/index';
+import useHttp from '../../../hooks/useHttp';
 
 const Wrapper = styled.div`
 	display: flex;
@@ -33,22 +34,33 @@ interface PersonalInfoProps {
 
 const PersonalInfo: React.FC<PersonalInfoProps> = ({ userName }) => {
 	const [userInfo, setUserInfo] = useState<any>([]);
-	const [isLoading, setIsLoading] = useState(false);
+	// const [isLoading, setIsLoading] = useState(false);
 
-	const fetchUserDetailInfo = useCallback(async (userName: string) => {
-		setIsLoading(true);
+	const { isLoading, sendRequest } = useHttp();
 
-		const res = await apiService.getUserDetailInfo(userName);
+	const fetchUserDetailInfo = (userName: string) => {
+		sendRequest(
+			{
+				url: `${BASE_REQUEST_URL}/users/${userName}`,
+			},
+			setUserInfo
+		);
+	};
 
-		if (res.status === 200) {
-			setUserInfo(res.data);
-			setIsLoading(false);
-		}
-	}, []);
+	// const fetchUserDetailInfo = useCallback(async (userName: string) => {
+	// 	setIsLoading(true);
+
+	// 	const res = await apiService.getUserDetailInfo(userName);
+
+	// 	if (res.status === 200) {
+	// 		setUserInfo(res.data);
+	// 		setIsLoading(false);
+	// 	}
+	// }, []);
 
 	useEffect(() => {
 		fetchUserDetailInfo(userName);
-	}, [userName, fetchUserDetailInfo]);
+	}, [userName]);
 
 	return (
 		<Spin spinning={isLoading}>

@@ -46,7 +46,7 @@ const ResetPassword: React.FC = () => {
 			.then((data) => {
         authCtx.logout();
         navigate('/login');
-				message.success('Reset password successfully!');
+				message.success('Reset password successfully :)');
 			})
 			.catch((err: any) => message.error(err.message));
 	};

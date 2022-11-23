@@ -47,7 +47,7 @@ const NavBar: React.FC = () => {
 	const onConfirm = () => {
 		authCtx.logout();
 		navigate('/login');
-		message.success('Log out successfully!');
+		message.success('Log out successfully :)');
 	};
 
 	return (
