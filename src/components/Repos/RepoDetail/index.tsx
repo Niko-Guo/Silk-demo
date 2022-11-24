@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import apiService from '../../../service/apiService';
+// import apiService from '../../../service/apiService';
 import {
 	Statistic,
 	Divider,
@@ -10,6 +10,7 @@ import {
 	List,
 	Button,
 	Tag,
+	message,
 } from 'antd';
 
 import { ProCard } from '@ant-design/pro-components';
@@ -25,6 +26,7 @@ import { EMPTY_STRING_PLACEHOLDER } from '../../../constants/index';
 import { dateFormat } from '../../../utilities/index';
 import { ContributorsType, fileDetailType } from './interface';
 import useHttp from '../../../hooks/useHttp';
+import { sortArray } from '../../../utilities/index';
 
 const Wrapper = styled.div`
 	display: flex;
@@ -46,14 +48,43 @@ const RepoDetail: React.FC = () => {
 	const [responsive, setResponsive] = useState(false);
 	const { repoOwner, repoName } = useParams();
 
-	const { sendRequest } = useHttp();
+	const { error, sendRequest } = useHttp();
+
+	error && message.error(error);
 
 	const fetchRepoDetailInfo = async (repoOwner?: string, repoName?: string) => {
 		sendRequest(
 			{
 				url: `${BASE_REQUEST_URL}/repos/${repoOwner}/${repoName}`,
 			},
-			setRepoDetailInfo
+			setRepoDetailInfo,
+			null
+		);
+	};
+
+	const fetchContributors = async (repoOwner?: string, repoName?: string) => {
+		sendRequest(
+			{
+				url: `${BASE_REQUEST_URL}/repos/${repoOwner}/${repoName}/contributors`,
+			},
+			setContributors,
+			(item) => ({
+				name: item.login,
+				avatar_url: item.avatar_url,
+			})
+		);
+	};
+
+	const fetchCodeBaseInfo = async (repoOwner?: string, repoName?: string) => {
+		sendRequest(
+			{
+				url: `${BASE_REQUEST_URL}/repos/${repoOwner}/${repoName}/contents`,
+			},
+			setFileDetail,
+			(item) => ({
+				name: item.name,
+				fileType: item.type,
+			})
 		);
 	};
 
@@ -65,37 +96,37 @@ const RepoDetail: React.FC = () => {
 	// 	}
 	// };
 
-	const fetchContributors = async (repoOwner?: string, repoName?: string) => {
-		const res = await apiService.getContributors(repoOwner, repoName);
+	// const fetchContributors = async (repoOwner?: string, repoName?: string) => {
+	// 	const res = await apiService.getContributors(repoOwner, repoName);
 
-		if (res.status === 200) {
-			setContributors(
-				res.data
-					.map((item) => ({
-						name: item.login,
-						avatar_url: item.avatar_url,
-					}))
-					.slice(0, 15)
-			);
-		}
-	};
+	// 	if (res.status === 200) {
+	// 		setContributors(
+	// 			res.data
+	// 				.map((item) => ({
+	// 					name: item.login,
+	// 					avatar_url: item.avatar_url,
+	// 				}))
+	// 				.slice(0, 15)
+	// 		);
+	// 	}
+	// };
 
-	const fetchCodeBaseInfo = async (repoOwner?: string, repoName?: string) => {
-		const res = await apiService.getCodeBaseInfo(repoOwner, repoName);
+	// const fetchCodeBaseInfo = async (repoOwner?: string, repoName?: string) => {
+	// 	const res = await apiService.getCodeBaseInfo(repoOwner, repoName);
 
-		if (res.status === 200) {
-			setFileDetail(
-				res.data
-					.map((item) => ({
-						name: item.name,
-						fileType: item.type,
-					}))
-					.sort((a, b) =>
-						a.fileType < b.fileType ? -1 : a.fileType > b.fileType ? 1 : 0
-					)
-			);
-		}
-	};
+	// 	if (res.status === 200) {
+	// 		setFileDetail(
+	// 			res.data
+	// 				.map((item) => ({
+	// 					name: item.name,
+	// 					fileType: item.type,
+	// 				}))
+	// 				.sort((a, b) =>
+	// 					a.fileType < b.fileType ? -1 : a.fileType > b.fileType ? 1 : 0
+	// 				)
+	// 		);
+	// 	}
+	// };
 
 	useEffect(() => {
 		fetchRepoDetailInfo(repoOwner, repoName);
@@ -170,12 +201,13 @@ const RepoDetail: React.FC = () => {
 								</div>
 							}
 							bordered
-							dataSource={fileDetail.map((item) => item.name)}
+							dataSource={sortArray(fileDetail).map((item) => item.name)}
 							renderItem={(item: any, index) => (
 								<List.Item key={index}>
 									<ListWrapper>
-										{fileDetail.find((fileItem) => fileItem.name === item)
-											?.fileType === 'dir' ? (
+										{sortArray(fileDetail).find(
+											(fileItem) => fileItem.name === item
+										)?.fileType === 'dir' ? (
 											<FolderOpenFilled
 												style={{ fontSize: 30, color: '#1890ff' }}
 											/>
@@ -216,7 +248,7 @@ const RepoDetail: React.FC = () => {
 						</Timeline>
 					</Card>
 					<Card style={{ marginTop: 20 }} title="Contributors">
-						{contributors.length ? (
+						{contributors.slice(0, 15).length ? (
 							<Wrapper>
 								{contributors.map((item, index) => (
 									<div>

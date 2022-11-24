@@ -6,7 +6,7 @@ const useHttp = () => {
 	const [error, setError] = useState(null);
 
 	const sendRequest = useCallback(
-		async (requestConfig, applyData) => {
+		async (requestConfig, applyData, mappingData) => {
 			setIsLoading(true);
 			setError(null);
 
@@ -20,8 +20,13 @@ const useHttp = () => {
 					},
 				});
 
+				
 				if (res.status === 200) {
-					applyData(res.data);
+					if (mappingData) {
+						applyData(res.data.map(mappingData));
+					} else {
+						applyData(res.data);
+					}
 				}
 			} catch (err: any) {
 				setError(err.message || 'Something went wrong!');

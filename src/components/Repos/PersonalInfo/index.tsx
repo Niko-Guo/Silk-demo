@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Avatar, Spin } from 'antd';
+import { Avatar, message, Spin } from 'antd';
 import styled from 'styled-components';
 import { BASE_REQUEST_URL } from '../../../constants/index';
-import apiService from '../../../service/apiService';
+// import apiService from '../../../service/apiService';
 import { EMPTY_STRING_PLACEHOLDER } from '../../../constants/index';
 import useHttp from '../../../hooks/useHttp';
 
@@ -36,14 +36,17 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({ userName }) => {
 	const [userInfo, setUserInfo] = useState<any>([]);
 	// const [isLoading, setIsLoading] = useState(false);
 
-	const { isLoading, sendRequest } = useHttp();
+	const { isLoading, error, sendRequest } = useHttp();
+
+	error && message.error(error);
 
 	const fetchUserDetailInfo = (userName: string) => {
 		sendRequest(
 			{
 				url: `${BASE_REQUEST_URL}/users/${userName}`,
 			},
-			setUserInfo
+			setUserInfo,
+			null
 		);
 	};
 
